@@ -1,0 +1,12 @@
+services: # 어떤 서비스를 실행할건지
+  postgres: # postgres 라는 서비스를 실행할 것이다.
+    image: postgres:15 # postgres 15버전 이미지를 사용
+    restart: always
+    volumes: # 도커를 종료시키면 이미지 안의 파일들이 날아갈 수 있기 때문에 연결
+      - ./postgres-data:/var/lib/postgresql/data # 왼쪽은 현재 오른쪽은 이미지 안
+    ports:
+      - "5433:5432" # host 5433 포트와 이미지의 5432 포트를 매핑
+    environment: # 데이터베이스의 정보
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
