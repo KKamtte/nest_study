@@ -35,7 +35,7 @@ export class AuthService {
    * {authorization: 'Basic {token}'}
    * {authorization 'Bearer {token}'}
    */
-  async extractTokenFromHeader(header: string, isBearer: boolean) {
+  extractTokenFromHeader(header: string, isBearer: boolean) {
     const splitToken = header.split(' ');
     const prefix = isBearer ? 'Bearer' : 'Basic';
     if (splitToken.length !== 2 || splitToken[0] !== prefix) {
@@ -46,6 +46,27 @@ export class AuthService {
     return token;
   }
 
+  /**
+   * Basic asdaok:a3okok
+   * 1) asdaok:a3okok -> email:password
+   * 2) email:password -> [email, password]
+   * 3) {email: email, password: password}
+   */
+  decodeBasicToken(base64String: string) {
+    const decoded = Buffer.from(base64String, 'base64').toString('utf-8');
+
+    const split = decoded.split(':');
+
+    if (split.length !== 2) {
+      throw new UnauthorizedException('invalid_token');
+    }
+
+    const [email, password] = split;
+    return {
+      email,
+      password,
+    };
+  }
   /**
    * 만들 기능
    *
