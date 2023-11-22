@@ -67,6 +67,38 @@ export class AuthService {
       password,
     };
   }
+
+  /**
+   * token 검증
+   */
+  verifyToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: JWT_SECRET,
+    });
+  }
+
+  rotateToken(token: string, isRefreshToken: boolean) {
+    const decoded = this.jwtService.verify(token, {
+      secret: JWT_SECRET,
+    });
+
+    /**
+     * sub: id
+     * email: email
+     * type: 'access' | 'refresh'
+     */
+    if (decoded.type !== 'refresh') {
+      throw new UnauthorizedException('invalid_token_type');
+    }
+
+    return this.signToken(
+      {
+        ...decoded,
+      },
+      isRefreshToken,
+    );
+  }
+
   /**
    * 만들 기능
    *
