@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -36,6 +37,11 @@ export class PostsController {
     @Body('authorId') authorId: number,
     @Body('title') title: string,
     @Body('content') content: string,
+    // 인스턴스화를 통해 함수가 실행될 때 마다 계속 생기게됨.
+    // PasswordPipe 만들땐 Injectable 을 사용
+    // 클래스를 그대로 입력하면 NestJS IOC 컨테이너에서 자동으로 값을 주입함
+    // 두 방식에 작동에는 큰 차이가 없음
+    @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
     return this.postsService.createPost(authorId, title, content);
   }
