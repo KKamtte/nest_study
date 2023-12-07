@@ -88,7 +88,7 @@ export class AuthService {
      * type: 'access' | 'refresh'
      */
     if (decoded.type !== 'refresh') {
-      throw new UnauthorizedException('invalid_token_type');
+      throw new UnauthorizedException('Refresh 토큰으로만 가능합니다');
     }
 
     return this.signToken(
