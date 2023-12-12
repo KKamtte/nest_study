@@ -9,10 +9,11 @@ import {
   Post,
   Put,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { UsersModel } from 'src/users/entities/users.entity';
+import { User } from 'src/users/decorator/user.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -38,7 +39,7 @@ export class PostsController {
   @Post()
   @UseGuards(AccessTokenGuard) // private router 로 로그인한 사용자만 사용할 수 있음
   postPost(
-    @Request() req: any,
+    @User() user: UsersModel,
     @Body('title') title: string,
     @Body('content') content: string,
     // 인스턴스화를 통해 함수가 실행될 때 마다 계속 생기게됨.
@@ -47,9 +48,7 @@ export class PostsController {
     // 두 방식에 작동에는 큰 차이가 없음
     @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
-    const authorId = req.user.id;
-
-    return this.postsService.createPost(authorId, title, content);
+    return this.postsService.createPost(user.id, title, content);
   }
 
   // 4) PUT /posts/:id
