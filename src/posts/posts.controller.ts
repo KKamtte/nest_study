@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -13,6 +12,7 @@ import {
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -35,19 +35,18 @@ export class PostsController {
 
   // 3) POST /posts
   //    post를 생성한다.
+  // DTO - Data Transfer Object 클라이언트로 부터 서버로 데이터를 전송받으면 서버에서 효율적으로 사용할 수 있도록 관리하는 객체
   @Post()
   @UseGuards(AccessTokenGuard) // private router 로 로그인한 사용자만 사용할 수 있음
   postPost(
     @User('id') userId: number,
-    @Body('title') title: string,
-    @Body('content') content: string,
+    @Body() body: CreatePostDto,
     // 인스턴스화를 통해 함수가 실행될 때 마다 계속 생기게됨.
     // PasswordPipe 만들땐 Injectable 을 사용
     // 클래스를 그대로 입력하면 NestJS IOC 컨테이너에서 자동으로 값을 주입함
     // 두 방식에 작동에는 큰 차이가 없음
-    @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
-    return this.postsService.createPost(userId, title, content);
+    return this.postsService.createPost(userId, body);
   }
 
   // 4) PUT /posts/:id
