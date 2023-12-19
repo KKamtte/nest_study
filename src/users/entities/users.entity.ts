@@ -9,6 +9,7 @@ import { emailValidationMessage } from 'src/common/validation-message/email-vali
 import { Exclude, Expose } from 'class-transformer';
 
 @Entity()
+@Exclude()
 export class UsersModel extends BaseModel {
   @Column({
     length: 20,
@@ -20,6 +21,7 @@ export class UsersModel extends BaseModel {
   @Length(1, 20, {
     message: lengthValidationMessage,
   })
+  @Expose()
   // 1) 길이가 20을 넘지 않을 것
   // 2) 유일무이한 값이 될 것
   nickname: string;
@@ -36,13 +38,9 @@ export class UsersModel extends BaseModel {
       message: emailValidationMessage,
     },
   )
+  @Expose()
   // 1) 유일무이한 값이 될 것
   email: string;
-
-  @Expose()
-  get nicknameAndEmail() {
-    return this.nickname + ' / ' + this.email;
-  }
 
   @Column()
   @IsString({
