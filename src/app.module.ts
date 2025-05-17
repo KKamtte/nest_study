@@ -13,6 +13,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [
     PostsModule,
+    // forRoot -> typeorm 연결을 설정할때 사용
     TypeOrmModule.forRoot({
       // 데이터 베이스 타입
       type: 'postgres',

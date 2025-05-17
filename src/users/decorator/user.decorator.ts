@@ -17,10 +17,12 @@ export const User = createParamDecorator(
       );
     }
 
+    // @User('id') 를 통해 data 에 id 라는 key 값이 들어오도록함
     if (data) {
       return user[data];
     }
 
+    // 만약 @User() 라면 undefined 이기 떄문에 user 전체가 반환됨
     return user;
   },
 );

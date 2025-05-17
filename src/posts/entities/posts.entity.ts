@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';

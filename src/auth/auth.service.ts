@@ -12,9 +12,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
+
   /**
    * 토큰을 사용하게 되는 방식
    *
+   * // yarn add @nestjs/jwt bcrypt
    * 1) 사용자가 로그인 또는 회원가입을 진행하면 accessToken 과 refreshToken 을 발급받는다.
    * 2) 로그인 할때는 Basic 토큰과 함께 요청을 보낸다.
    *    Basic 토큰은 '이메일:비밀번호'를 Base64로 인코딩한 형태이다. {authorization: 'Basic {token}'}

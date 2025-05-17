@@ -14,7 +14,6 @@
       ],
       "console": "integratedTerminal",
       "restart": true,
-      "port": 9229,
       "autoAttachChildProcesses": true,
       "skipFiles": [
         "<node_internals>/**"
@@ -23,3 +22,4 @@
     }
   ]
 }
+// https://velog.io/@seungchan__y/Webstorm%EC%97%90%EC%84%9C-ESLint-Prettier-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0 eslint 및 prettier webstorm 적용

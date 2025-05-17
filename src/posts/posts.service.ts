@@ -4,12 +4,12 @@ import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PaginatePostsDto } from 'src/auth/dto/paginate-post.dto';
+import { PaginatePostsDto } from 'src/posts/dto/paginate-post.dto';
 
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectRepository(PostsModel)
+    @InjectRepository(PostsModel) // 모델에 따라 해당하는 레포지토리를 넣어줄때 사용
     private readonly postsRepository: Repository<PostsModel>,
   ) {}
 
