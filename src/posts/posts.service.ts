@@ -58,15 +58,20 @@ export class PostsService {
        * 단, id 값만 lastItem의 마지막 값으로 넣어준다.
        */
       for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than') {
+        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
           nextUrl.searchParams.append(key, dto[key]);
         }
       }
 
-      nextUrl.searchParams.append(
-        'where__id_more_than',
-        lastItem.id.toString(),
-      );
+      let key = null;
+
+      if (dto.order__createdAt === 'ASC') {
+        key = 'where__id_more_than';
+      } else {
+        key = 'where__id_less_than';
+      }
+
+      nextUrl.searchParams.append(key, lastItem.id.toString());
     }
 
     /**
