@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostsDto } from 'src/posts/dto/paginate-post.dto';
+import { HOST, PROTOCOL } from '../common/const/env.const';
 
 @Injectable()
 export class PostsService {
@@ -39,6 +40,31 @@ export class PostsService {
       },
       take: dto.take,
     });
+    // 해당되는 포스트가 0개 이상이면
+    // 마지막 포스트를 가져오고
+    // 아니면 0을 반환한다
+    const lastItem = posts.length > 0 ? posts[posts.length - 1] : null;
+
+    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/`);
+
+    if (nextUrl) {
+      /**
+       * dto 의 키 값을 확인하고
+       * 키값에 해당하는 value 가 존재하면
+       * param 에 그대로 붙여넣는다.
+       * 단, id 값만 lastItem의 마지막 값으로 넣어준다.
+       */
+      for (const key of Object.keys(dto)) {
+        if (key !== 'where__id_more_than') {
+          nextUrl.searchParams.append(key, dto[key]);
+        }
+      }
+
+      nextUrl.searchParams.append(
+        'where__id_more_than',
+        lastItem.id.toString(),
+      );
+    }
 
     /**
      * Response
@@ -50,9 +76,13 @@ export class PostsService {
      * count: 응답한 데이터의 개수
      * next: 다음 요청을 할때 사용할 URL
      */
-
     return {
       data: posts,
+      cursor: {
+        after: lastItem?.id,
+      },
+      count: posts.length,
+      next: nextUrl?.toString(),
     };
   }
 
