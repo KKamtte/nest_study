@@ -15,6 +15,8 @@ export class PaginatePostsDto {
   @IsOptional()
   order__createdAt = 'ASC' as const;
 
+  @IsNumber()
+  @IsOptional()
   // 몇개의 데이터를 입력 받을지
   take: number = 20;
 }
