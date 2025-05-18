@@ -14,7 +14,7 @@ import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'node:process';
 import {
@@ -25,6 +25,8 @@ import {
   ENV_DB_USERNAME_KEY,
 } from './common/const/env-keys.const';
 import { LogMiddleware } from './common/middleware/log.middleware';
+import { RolesGuard } from './users/guard/roles.guard';
+import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
 
 @Module({
   imports: [
@@ -55,6 +57,14 @@ import { LogMiddleware } from './common/middleware/log.middleware';
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })
