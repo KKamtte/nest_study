@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
@@ -17,6 +18,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostsDto } from 'src/posts/dto/paginate-post.dto';
 import { UsersModel } from 'src/users/entities/users.entity';
+import { LogInterceptor } from '../common/interceptor/log.interceptor';
 
 @Controller('posts')
 export class PostsController {
@@ -25,6 +27,7 @@ export class PostsController {
   // 1) GET /posts
   //    모든 post를 가져온다.
   @Get()
+  @UseInterceptors(LogInterceptor)
   getPosts(@Query() query: PaginatePostsDto) {
     return this.postsService.paginatePosts(query);
   }
