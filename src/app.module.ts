@@ -1,4 +1,10 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
@@ -18,6 +24,7 @@ import {
   ENV_DB_PORT_KEY,
   ENV_DB_USERNAME_KEY,
 } from './common/const/env-keys.const';
+import { LogMiddleware } from './common/middleware/log.middleware';
 
 @Module({
   imports: [
@@ -51,4 +58,12 @@ import {
     },
   ],
 })
-export class AppModule {}
+// 글로벌로 미들 웨어 적용
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(LogMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.GET,
+    });
+  }
+}
