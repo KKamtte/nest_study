@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,6 +9,7 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +21,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostsDto } from 'src/posts/dto/paginate-post.dto';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { LogInterceptor } from '../common/interceptor/log.interceptor';
+import { HttpExceptionFilter } from '../common/ExceptionFIlter/http.exception-filter';
 
 @Controller('posts')
 export class PostsController {
