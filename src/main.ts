@@ -10,6 +10,8 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true, // @Type 을 이용하여 형변환 하는 과정이 필요없도록 함
       },
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
   await app.listen(3000);

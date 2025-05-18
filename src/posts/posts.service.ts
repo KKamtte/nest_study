@@ -5,13 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostsDto } from 'src/posts/dto/paginate-post.dto';
-import { HOST, PROTOCOL } from '../common/const/env.const';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel) // 모델에 따라 해당하는 레포지토리를 넣어줄때 사용
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   async getAllPosts() {
@@ -30,10 +31,18 @@ export class PostsService {
   }
 
   async paginatePosts(dto: PaginatePostsDto) {
-    if (dto.page) {
-      return this.pagePaginatePosts(dto);
-    }
-    return this.cursorPaginationPosts(dto);
+    // if (dto.page) {
+    //   return this.pagePaginatePosts(dto);
+    // }
+    // return this.cursorPaginationPosts(dto);
+    return this.commonService.paginate(
+      dto,
+      this.postsRepository,
+      {
+        relations: ['author'],
+      },
+      'posts',
+    );
   }
 
   async pagePaginatePosts(dto: PaginatePostsDto) {
@@ -45,7 +54,7 @@ export class PostsService {
       skip: dto.take * (dto.page - 1),
       take: dto.take,
       order: {
-        createAt: dto.order__createdAt,
+        createdAt: dto.order__createdAt,
       },
     });
 
@@ -57,51 +66,52 @@ export class PostsService {
 
   async cursorPaginationPosts(dto: PaginatePostsDto) {
     const where: FindOptionsWhere<PostsModel> = {};
-    if (dto.where__id_less_than) {
-      where.id = LessThan(dto.where__id_less_than);
-    } else if (dto.where__id_more_than) {
-      where.id = MoreThan(dto.where__id_more_than);
+    if (dto.where__id__less_than) {
+      where.id = LessThan(dto.where__id__less_than);
+    } else if (dto.where__id__more_than) {
+      where.id = MoreThan(dto.where__id__more_than);
     }
     const posts = await this.postsRepository.find({
       where,
       order: {
-        createAt: dto.order__createdAt,
+        createdAt: dto.order__createdAt,
       },
       take: dto.take,
     });
-    // 해당되는 포스트가 0개 이상이면
-    // 마지막 포스트를 가져오고
-    // 아니면 0을 반환한다
-    const lastItem =
-      posts.length > 0 && posts.length === dto.take
-        ? posts[posts.length - 1]
-        : null;
-
-    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/`);
-
-    if (nextUrl) {
-      /**
-       * dto 의 키 값을 확인하고
-       * 키값에 해당하는 value 가 존재하면
-       * param 에 그대로 붙여넣는다.
-       * 단, id 값만 lastItem의 마지막 값으로 넣어준다.
-       */
-      for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
-          nextUrl.searchParams.append(key, dto[key]);
-        }
-      }
-
-      let key = null;
-
-      if (dto.order__createdAt === 'ASC') {
-        key = 'where__id_more_than';
-      } else {
-        key = 'where__id_less_than';
-      }
-
-      nextUrl.searchParams.append(key, lastItem.id.toString());
-    }
+    // common.service.ts 로 이동
+    // // 해당되는 포스트가 0개 이상이면
+    // // 마지막 포스트를 가져오고
+    // // 아니면 0을 반환한다
+    // const lastItem =
+    //   posts.length > 0 && posts.length === dto.take
+    //     ? posts[posts.length - 1]
+    //     : null;
+    //
+    // const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/`);
+    //
+    // if (nextUrl) {
+    //   /**
+    //    * dto 의 키 값을 확인하고
+    //    * 키값에 해당하는 value 가 존재하면
+    //    * param 에 그대로 붙여넣는다.
+    //    * 단, id 값만 lastItem의 마지막 값으로 넣어준다.
+    //    */
+    //   for (const key of Object.keys(dto)) {
+    //     if (key !== 'where__id__more_than' && key !== 'where__id__less_than') {
+    //       nextUrl.searchParams.append(key, dto[key]);
+    //     }
+    //   }
+    //
+    //   let key = null;
+    //
+    //   if (dto.order__createdAt === 'ASC') {
+    //     key = 'where__id__more_than';
+    //   } else {
+    //     key = 'where__id__less_than';
+    //   }
+    //
+    //   nextUrl.searchParams.append(key, lastItem.id.toString());
+    // }
 
     /**
      * Response
@@ -113,14 +123,14 @@ export class PostsService {
      * count: 응답한 데이터의 개수
      * next: 다음 요청을 할때 사용할 URL
      */
-    return {
-      data: posts,
-      cursor: {
-        after: lastItem?.id ?? null,
-      },
-      count: posts.length,
-      next: nextUrl?.toString() ?? null,
-    };
+    // return {
+    //   data: posts,
+    //   cursor: {
+    //     after: lastItem?.id ?? null,
+    //   },
+    //   count: posts.length,
+    //   next: nextUrl?.toString() ?? null,
+    // };
   }
 
   async getPostById(id: number) {
